@@ -22,6 +22,8 @@ int main(int argc, char* argv[])
   double *bb;	/* the B matrix */
   double *cc1;	/* A x B computed using the omp-mpi code you write */
   double *cc2;	/* A x B computed using the conventional algorithm */
+  double *AA; //* A matrix read from file*//
+  double *BB; // B matrix read from file*//
   int myid, numprocs;
   double starttime, endtime;
   MPI_Status status;
@@ -30,6 +32,17 @@ int main(int argc, char* argv[])
   MPI_Comm_size(MPI_COMM_WORLD, &numprocs);
   MPI_Comm_rank(MPI_COMM_WORLD, &myid);
   if (argc > 1) {
+    ////////
+    char *matrixA_file = argv[1];
+    char *matrixB_file = argv[2];
+    int *dimensions_A = getDimensions(matrixA_file);
+    int *dimensions_B = getDimensions(matrixB_file);
+    //compare dimensions and see if valid multiplication
+    if(validMultiply(dimensions_A, dimensions_B)==1){
+	//read matrixA and matrixB
+	AA = readMatrix(matrixA_file);
+	BB = readMatrix(matrixB_file);
+    ////////
     nrows = atoi(argv[1]);
     ncols = nrows;
     if (myid == 0) {
@@ -57,6 +70,7 @@ double *readMatrix(char *fileName){
 	FILE *file = fopen(fileName, 'r');
 	if(file == NULL){
 		printf("Error Opening File %s", fileName);
+		//exit(0);
 	}
 	char buffer[1024];
 	int nRows, mCols;
@@ -64,22 +78,54 @@ double *readMatrix(char *fileName){
 		sscanf("%d %d", &nRows, &mCols);
 	}
 	double *matrix = (double*)malloc(sizeof(double)*nRows*mCols);
-	int line = 0;
-	char line[1024];
-	fgets(buffer,1024,file);//skip the first line containing dimensions
-	
+	char *line;
+	//fgets(buffer,1024,file);//skip the first line containing dimensions
+		
 	while(fgets(buffer, 1024, file)!=NULL){
-		//
-		//line+=buffer		
+		line += buffer;
 	}	
+	
 	//tokenize the line and store the array elements
-	for(int i =0; i<nRows, i++)[
+	char *token = strtok(line," ");
+	int i =0;
+	double *tokens[nRows * mCols];
+	tokens[i]= atof(token);
+	while(token!=NULL)
+		token = strtok(NULL," ");
+		tokens[i] = atof(token);
+		i++;
+
+	for(int i =0; i<nRows, i++){
 		for(int j = 0; j<mCols; j++){
-			
+			matrix[i*mCols+j] = tokens[i*mCols+j] ;		
 					
 	}}
+	//free(buffer);
 	fclose(file);	
+	return matrix;
+}
 
+int* getDimensions(char *fileName){
+//gets the dimension of the matrix in txt file fileName
+	FILE *fp = fopen(fileName, "r");
+	if(fp==NULL){
+		fprintf("Error Reading file %s",fileName);
+		exit(0);
+	}
+	char buffer[1024];
+	int row, col;
+	if(fgets(buffer, 1024, fp)!=NULL){
+		sscanf("%d %d", &row, &col);
+	}
+	int dimension[2];
+	dimension[0] = row;
+	dimension[1] =col;
+	return dimension;
+}	
 
-	return *matrix
+int validMultiply( int *a, int *b){
+	if(a[1] == b[0])
+		return 1;
+	else
+		return 0;
 }
