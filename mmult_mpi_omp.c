@@ -53,3 +53,33 @@ int main(int argc, char* argv[])
   MPI_Finalize();
   return 0;
 }
+double *readMatrix(char *fileName){
+	FILE *file = fopen(fileName, 'r');
+	if(file == NULL){
+		printf("Error Opening File %s", fileName);
+	}
+	char buffer[1024];
+	int nRows, mCols;
+	if(fgets(buffer, sizeof(buffer), file)!=NULL){
+		sscanf("%d %d", &nRows, &mCols);
+	}
+	double *matrix = (double*)malloc(sizeof(double)*nRows*mCols);
+	int line = 0;
+	char line[1024];
+	fgets(buffer,1024,file);//skip the first line containing dimensions
+	
+	while(fgets(buffer, 1024, file)!=NULL){
+		//
+		//line+=buffer		
+	}	
+	//tokenize the line and store the array elements
+	for(int i =0; i<nRows, i++)[
+		for(int j = 0; j<mCols; j++){
+			
+					
+	}}
+	fclose(file);	
+
+
+	return *matrix
+}
