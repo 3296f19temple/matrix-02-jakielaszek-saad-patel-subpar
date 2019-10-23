@@ -85,3 +85,66 @@ void compare_matrices(double* a, double* b, int nRows, int nCols) {
 	printf("Matrices are the same\n");
 }
 
+double *readMatrix(char *fileName){
+        FILE *file = fopen(fileName, "r");
+        if(file == NULL){
+                printf("Error Opening File %s", fileName);
+                exit(0);
+        }
+        char line[1024];
+        int nRows = 0;
+		int mCols =0;
+        if (fgets(line, sizeof(line), file)) {
+			printf("%s", line); 
+		}
+		sscanf(line, "%d %d", &nRows, &mCols);
+		
+        double matrix[nRows*mCols];
+  
+        if(fgets(line,1024,file)){//skip the first line containing dimensions
+		}
+        //tokenize the line and store the array elements
+		char buffer[1024];
+		strcpy(buffer, line);
+		int i =1;
+		double val;
+        char *token = strtok(buffer," ");
+        matrix[0]= atof(token);
+        while(token!=NULL){
+				sscanf (token, "%lf", &val);
+                matrix[i] = val;
+                i++;
+				
+				token = strtok(NULL," ");
+        }
+		
+		fclose(file);
+        return matrix;
+}
+
+void writeMatrix(char *fileName, double* a, int rows, int cols){
+        FILE *fp = fopen(fileName, "w");
+        if(fp == NULL){
+                printf("Error opening %s file to write", fileName);
+        }
+        fprintf(fp,"%d %d\n",rows,cols);
+        for(int i =0; i < rows*cols; i++){
+                fprintf(fp,"%lf ",a[i]);
+        }
+        fclose(fp);
+}
+
+void tabulateMatrix(double *matrix, int rows, int cols){
+	int j =0;int k = 0;
+	double newMatrix[rows][cols];
+	for(int i = 0; i < rows*cols; i++){
+		if((i+1)%cols ==0){
+			j++;
+			k=0;
+			printf("\n");
+		}
+		printf("%lf ",matrix[i]);
+		newMatrix[j][k] = matrix[i];
+		k++;
+	}
+}
