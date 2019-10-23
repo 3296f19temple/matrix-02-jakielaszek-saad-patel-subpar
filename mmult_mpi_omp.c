@@ -43,20 +43,20 @@ int main(int argc, char* argv[])
       // Master Code goes here
       aa = read_matrix(f_mat_a, &nrows);
       bb = read_matrix(f_mat_b, &nrows);
-      
       ncols = nrows;
-
+      printf("CUR DIMS [%d]\n", nrows);
+      
       cc1 = malloc(sizeof(double) * nrows * nrows); 
       starttime = MPI_Wtime();
       /* Insert your master code here to store the product into cc1 */
       mmult_slow(cc1, aa, nrows, ncols, bb, ncols, nrows);
       endtime = MPI_Wtime();
-      fprintf(fp, "FAST %d %f\n",nrows*ncols, (endtime - starttime));
+      fprintf(fp, "SLOW %d %f\n",nrows*ncols, (endtime - starttime));
       cc2  = malloc(sizeof(double) * nrows * nrows);
       starttime = MPI_Wtime();
       mmult(cc2, aa, nrows, ncols, bb, ncols, nrows);
       endtime = MPI_Wtime();
-      fprintf(fp, "SLOW %d %f\n",nrows*ncols, (endtime - starttime));
+      fprintf(fp, "FAST %d %f\n",nrows*ncols, (endtime - starttime));
 
       compare_matrices(cc2, cc1, nrows, nrows);
 

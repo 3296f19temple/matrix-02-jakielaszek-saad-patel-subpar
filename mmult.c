@@ -48,14 +48,12 @@ double* gen_matrix(int n, int m) {
 
 double* read_matrix(char * fname, int *dims){
   FILE * fp = fopen(fname, "r");
-
-  int BUFFSIZE = 10000;
-  char buffer[BUFFSIZE];
+  int BUFFSIZE = 100000000;
+  char *buffer = (char*)malloc(sizeof(char)*BUFFSIZE);
 
   if(fgets(buffer, BUFFSIZE, fp) == NULL){
     printf("ERROR: Invalid matrix file");
   }
-
   char * token = strtok(buffer, " ");
   *dims = atoi(token);
 
@@ -66,6 +64,7 @@ double* read_matrix(char * fname, int *dims){
   for(i = 0; i <length; i++){
     char * token = strtok(NULL, " ");
     matrix[i] = atof(token);
+
   }
 
   return(matrix);
