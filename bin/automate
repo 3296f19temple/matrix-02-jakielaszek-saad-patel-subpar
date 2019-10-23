@@ -1,0 +1,9 @@
+#!/bin/bash
+
+make
+for(n=2; n<=256; n*=2)
+do
+mpiexec -f ~/hosts -n 4 ../mmult_mpi_omp n
+done
+make clean
+echo All Done
