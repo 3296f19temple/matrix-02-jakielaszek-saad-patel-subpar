@@ -40,14 +40,14 @@ int main(int argc, char* argv[])
       cc1 = malloc(sizeof(double) * nrows * nrows); 
       starttime = MPI_Wtime();
       /* Insert your master code here to store the product into cc1 */
-      mmult(cc1, aa, nrows, ncols, bb, ncols, nrows);
+      mmult_slow(cc1, aa, nrows, ncols, bb, ncols, nrows);
       endtime = MPI_Wtime();
-      printf("%f\n",(endtime - starttime));
+      printf("SLOW: %f\n",(endtime - starttime));
       cc2  = malloc(sizeof(double) * nrows * nrows);
       starttime = MPI_Wtime();
       mmult(cc2, aa, nrows, ncols, bb, ncols, nrows);
       endtime = MPI_Wtime();
-      printf("%f\n",(endtime - starttime));
+      printf("Fast: %f\n",(endtime - starttime));
 
       compare_matrices(cc2, cc1, nrows, nrows);
     } else {
