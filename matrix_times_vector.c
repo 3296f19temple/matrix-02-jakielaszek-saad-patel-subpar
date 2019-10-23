@@ -22,7 +22,6 @@ int main(int argc, char* argv[])
   MPI_Init(&argc, &argv);
   MPI_Comm_size(MPI_COMM_WORLD, &numprocs);
   MPI_Comm_rank(MPI_COMM_WORLD, &myid);
-  for(int i = 1; i<=10; i++){
   if (argc > 1) {
     nrows = atoi(argv[1])*i;
     ncols = nrows;
@@ -91,6 +90,5 @@ int main(int argc, char* argv[])
     fprintf(stderr, "Usage matrix_times_vector <size>\n");
   }
   MPI_Finalize();
-  }
   return 0;
 }
