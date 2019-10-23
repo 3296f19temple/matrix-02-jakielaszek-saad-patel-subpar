@@ -1,0 +1,62 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+
+int main(int argc, char ** argv){
+  if(argc != 5){
+    printf("ERROR: Invalid number of arguments\n");
+    exit(-1);
+  }
+
+  int dims[4];
+  
+  int i = 0;
+  for(i = 0; i < 5; i++){
+    dims[i] = atoi(argv[1]);
+    if(dims[i] == NULL){
+      printf("ERROR: Failed to parse dims\n");
+      exit(-2);
+    }
+  }
+  
+  if(dims[1] != dims[2]){
+    printf("ERROR: Improper dimensionality of matrices");
+    exit(-3);
+  }
+
+  double ** a = gen_matrix(dims[0], dims[1]);
+  double ** b = gen_matrix(dims[2], dims[3]);
+
+  FILE * f_a = fopen("a.txt", "w");
+  FILE * f_b = fopen("a.txt", "w");
+
+  int count = 0;
+  for(i = 0; i < dims[0]; i++){
+    int j = 0;
+    for(j = 0; j < dims[1]; j++){
+      fprintf(f_b, "%3lf "f_a[count]);
+
+      count++;
+    }    
+
+    fprintf(f_b, "\n");
+  }
+
+
+  count = 0;
+  for(i = 0; i < dims[0]; i++){
+    int j = 0;
+    for(j = 0; j < dims[1]; j++){
+      fprintf(f_b, "%3lf "f_a[count]);
+
+      count++;
+    }    
+
+    fprintf(f_b, "\n");
+  }
+
+  fclose(f_a);
+  fclose(f_b);
+  
+  return 0;
+}

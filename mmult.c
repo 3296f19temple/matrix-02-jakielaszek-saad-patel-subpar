@@ -1,6 +1,7 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<math.h>
+#include<string.h>
 
 int mmult(double *c, 
 	  double *a, int aRows, int aCols, 
@@ -19,6 +20,21 @@ int mmult(double *c,
   return 0;
 }
 
+int mmult_slow(double *c, 
+	  double *a, int aRows, int aCols, 
+	  double *b, int bRows, int bCols) {
+  int i, j, k;
+  for (i = 0; i < aRows; i++) {
+    for (j = 0; j < bCols; j++) {
+      c[i*bCols + j] = 0;
+      for (k = 0; k < aCols; k++) {
+	c[i*bCols + j] += a[i*aCols + k] * b[k*bCols + j];
+      }
+    }
+  }
+  return 0;
+}
+
 double* gen_matrix(int n, int m) {
   int i, j;
   double *a = malloc(sizeof(double) * n * m);
@@ -28,6 +44,30 @@ double* gen_matrix(int n, int m) {
     }
   }
   return a;
+}
+
+double* read_matrix(char * fname, int *dims){
+  FILE * fp = fopen(fname, "r");
+  int BUFFSIZE = 100000000;
+  char *buffer = (char*)malloc(sizeof(char)*BUFFSIZE);
+
+  if(fgets(buffer, BUFFSIZE, fp) == NULL){
+    printf("ERROR: Invalid matrix file");
+  }
+  char * token = strtok(buffer, " ");
+  *dims = atoi(token);
+
+  int length = (*dims)*(*dims);
+  double * matrix = (double*)malloc(sizeof(double)*length);
+  
+  int i =0;
+  for(i = 0; i <length; i++){
+    char * token = strtok(NULL, " ");
+    matrix[i] = atof(token);
+
+  }
+
+  return(matrix);
 }
 
 void compare_matrices(double* a, double* b, int nRows, int nCols) {
