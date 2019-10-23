@@ -19,6 +19,7 @@ int mmult(double *c,
   return 0;
 }
 
+// copy into Saad's branch
 int mmult_slow(double *c, 
 	  double *a, int aRows, int aCols, 
 	  double *b, int bRows, int bCols) {
