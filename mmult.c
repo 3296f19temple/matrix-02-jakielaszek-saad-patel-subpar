@@ -1,6 +1,7 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<math.h>
+#include<string.h>
 
 int mmult(double *c, 
 	  double *a, int aRows, int aCols, 
@@ -19,7 +20,6 @@ int mmult(double *c,
   return 0;
 }
 
-// copy into Saad's branch
 int mmult_slow(double *c, 
 	  double *a, int aRows, int aCols, 
 	  double *b, int bRows, int bCols) {
@@ -44,6 +44,31 @@ double* gen_matrix(int n, int m) {
     }
   }
   return a;
+}
+
+double* read_matrix(char * fname, int *dims){
+  FILE * fp = fopen(fname, "r");
+
+  int BUFFSIZE = 10000;
+  char buffer[BUFFSIZE];
+
+  if(fgets(buffer, BUFFSIZE, fp) == NULL){
+    printf("ERROR: Invalid matrix file");
+  }
+
+  char * token = strtok(buffer, " ");
+  *dims = atoi(token);
+
+  int length = (*dims)*(*dims);
+  double * matrix = (double*)malloc(sizeof(double)*length);
+  
+  int i =0;
+  for(i = 0; i <length; i++){
+    char * token = strtok(NULL, " ");
+    matrix[i] = atof(token);
+  }
+
+  return(matrix);
 }
 
 void compare_matrices(double* a, double* b, int nRows, int nCols) {
