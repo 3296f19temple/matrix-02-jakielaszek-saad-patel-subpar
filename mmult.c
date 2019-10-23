@@ -19,6 +19,21 @@ int mmult(double *c,
   return 0;
 }
 
+int mmult_slow(double *c, 
+	  double *a, int aRows, int aCols, 
+	  double *b, int bRows, int bCols) {
+  int i, j, k;
+  for (i = 0; i < aRows; i++) {
+    for (j = 0; j < bCols; j++) {
+      c[i*bCols + j] = 0;
+      for (k = 0; k < aCols; k++) {
+	c[i*bCols + j] += a[i*aCols + k] * b[k*bCols + j];
+      }
+    }
+  }
+  return 0;
+}
+
 double* gen_matrix(int n, int m) {
   int i, j;
   double *a = malloc(sizeof(double) * n * m);

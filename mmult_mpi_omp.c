@@ -7,6 +7,7 @@
 
 double* gen_matrix(int n, int m);
 int mmult(double *c, double *a, int aRows, int aCols, double *b, int bRows, int bCols);
+int mmult_slow(double *c, double *a, int aRows, int aCols, double *b, int bRows, int bCols);
 void compare_matrix(double *a, double *b, int nRows, int nCols);
 
 /** 
@@ -39,10 +40,15 @@ int main(int argc, char* argv[])
       cc1 = malloc(sizeof(double) * nrows * nrows); 
       starttime = MPI_Wtime();
       /* Insert your master code here to store the product into cc1 */
+      mmult(cc1, aa, nrows, ncols, bb, ncols, nrows);
       endtime = MPI_Wtime();
       printf("%f\n",(endtime - starttime));
       cc2  = malloc(sizeof(double) * nrows * nrows);
+      starttime = MPI_Wtime();
       mmult(cc2, aa, nrows, ncols, bb, ncols, nrows);
+      endtime = MPI_Wtime();
+      printf("%f\n",(endtime - starttime));
+
       compare_matrices(cc2, cc1, nrows, nrows);
     } else {
       // Slave Code goes here
