@@ -24,7 +24,7 @@ int main(int argc, char* argv[])
   MPI_Comm_rank(MPI_COMM_WORLD, &myid);
   for(int i = 1; i<=10; i++){
   if (argc > 1) {
-    nrows = atoi(argv[1]*i);
+    nrows = atoi(argv[1])*i;
     ncols = nrows;
     aa = (double*)malloc(sizeof(double) * nrows * ncols);
     b = (double*)malloc(sizeof(double) * ncols);
