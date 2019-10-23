@@ -93,32 +93,30 @@ double *readMatrix(char *fileName){
         }
         char line[1024];
         int nRows = 0;
-		int mCols =0;
+	int mCols =0;
         if (fgets(line, sizeof(line), file)) {
-			printf("%s", line); 
-		}
-		sscanf(line, "%d %d", &nRows, &mCols);
-		
+		printf("%s", line); 
+	}
+	sscanf(line, "%d %d", &nRows, &mCols);
         double matrix[nRows*mCols];
   
         if(fgets(line,1024,file)){//skip the first line containing dimensions
-		}
+	}
         //tokenize the line and store the array elements
-		char buffer[1024];
-		strcpy(buffer, line);
-		int i =1;
-		double val;
+	char buffer[1024];
+	strcpy(buffer, line);
+	int i =1;
+	double val;
         char *token = strtok(buffer," ");
         matrix[0]= atof(token);
         while(token!=NULL){
-				sscanf (token, "%lf", &val);
+		sscanf (token, "%lf", &val);
                 matrix[i] = val;
                 i++;
-				
-				token = strtok(NULL," ");
+		token = strtok(NULL," ");
         }
 		
-		fclose(file);
+	fclose(file);
         return matrix;
 }
 
@@ -142,9 +140,9 @@ void tabulateMatrix(double *matrix, int rows, int cols){
 			j++;
 			k=0;
 			printf("\n");
-		}
-		printf("%lf ",matrix[i]);
-		newMatrix[j][k] = matrix[i];
-		k++;
+	}
+	printf("%lf ",matrix[i]);
+	newMatrix[j][k] = matrix[i];
+	k++;
 	}
 }
