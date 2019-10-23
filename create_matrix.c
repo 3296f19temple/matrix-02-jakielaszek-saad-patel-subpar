@@ -6,13 +6,14 @@ double* gen_matrix(int n, int m);
 
 int main(int argc, char ** argv){
   int dims = atoi(argv[1]);
+  printf("%d\n", dims);
+
   int power = 1;
   int k = 0;
   for(k = 0; k < dims; k++){
     power *= 2;
   }
   dims=power;
-  
   char * fname = argv[2];
 
   double * matrix = gen_matrix(dims,dims);
