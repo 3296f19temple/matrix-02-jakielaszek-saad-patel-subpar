@@ -31,6 +31,9 @@ int main(int argc, char* argv[])
   MPI_Comm_size(MPI_COMM_WORLD, &numprocs);
   MPI_Comm_rank(MPI_COMM_WORLD, &myid);
   if (argc > 1) {
+    char * logFile = argv[2];
+    FILE * fp = fopen(logFile, "a");
+    
     nrows = atoi(argv[1]);
     ncols = nrows;
     if (myid == 0) {
@@ -42,14 +45,16 @@ int main(int argc, char* argv[])
       /* Insert your master code here to store the product into cc1 */
       mmult_slow(cc1, aa, nrows, ncols, bb, ncols, nrows);
       endtime = MPI_Wtime();
-      printf("SLOW: %f\n",(endtime - starttime));
+      fprintf(fp, "FAST %d %f\n",nrows*ncols, (endtime - starttime));
       cc2  = malloc(sizeof(double) * nrows * nrows);
       starttime = MPI_Wtime();
       mmult(cc2, aa, nrows, ncols, bb, ncols, nrows);
       endtime = MPI_Wtime();
-      printf("Fast: %f\n",(endtime - starttime));
+      fprintf(fp, "SLOW %d %f\n",nrows*ncols, (endtime - starttime));
 
       compare_matrices(cc2, cc1, nrows, nrows);
+
+      fclose(fp);
     } else {
       // Slave Code goes here
     }
