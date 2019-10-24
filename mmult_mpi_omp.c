@@ -41,7 +41,7 @@ int main(int argc, char* argv[])
     char * f_mat_a = argv[1];
     char * f_mat_b = argv[2];
 
-    numworkers = numprocs - 1; // sets up the amount that need to be received from
+    numworker = numprocs - 1; // sets up the amount that need to be received from
     if (myid == 0) {
       nrows = 0;
       // Master Code goes here
@@ -62,13 +62,13 @@ int main(int argc, char* argv[])
       for(dest = 1; dest <= numworker; dest++){
         MPI_send(&offset,1,MPI_INT,dest,2,MPI_COMM_WORLD);
         MPI_send(&row,1,MPI_INT,dest,2,MPI_COMM_WORLD);
-        MPI_send(aa[offset][0],row*nrows,MPI_DOUBLE,dest,2,MPI_COMM_WORLD);
+        MPI_send(aa[offset],row*nrows,MPI_DOUBLE,dest,2,MPI_COMM_WORLD);
         MPI_send(bb,ncols*nrows,MPI_INT,dest,2,MPI_COMM_WORLD);
       }
       for(dest=1; dest<=numworker; dest++){
         MPI_recv(&offset,1,MPI_INT,dest,2,MPI_COMM_WORLD,&status);
         MPI_recv(&row,1,MPI_INT,dest,2,MPI_COMM_WORLD,&status);
-        MPI_recv(cc2[offset][0],row*nrows,MPI_DOUBLE,dest,2,MPI_COMM_WORLD,&status);
+        MPI_recv(cc2[offset],row*nrows,MPI_DOUBLE,dest,2,MPI_COMM_WORLD,&status);
       }
       endtime = MPI_Wtime();
       fprintf(fp, "FAST %d %f\n",nrows*ncols, (endtime - starttime));
@@ -85,12 +85,12 @@ int main(int argc, char* argv[])
       */
       MPI_recv(&offset,1,MPI_INT,0,2,MPI_COMM_WORLD,&status);
       MPI_recv(&row,1,MPI_INT,0,2,MPI_COMM_WORLD,&status);
-      MPI_recv(&aa,row*nrows,MPI_DOUBLE,0,2,MPI_COMM_WORLD,&status);
-      MPI_recv(&bb,1,nrows*ncols,0,2,MPI_COMM_WORLD,&status);
+      MPI_recv(aa,row*nrows,MPI_DOUBLE,0,2,MPI_COMM_WORLD,&status);
+      MPI_recv(bb,1,nrows*ncols,0,2,MPI_COMM_WORLD,&status);
       mmult(cc2, aa, offset, ncols, bb, ncols, nrows);
       MPI_send(&offset,1,MPI_INT,0,2,MPI_COMM_WORLD);
       MPI_send(&row,1,MPI_INT,0,2,MPI_COMM_WORLD);
-      MPI_send(cc2[offset][0],rows*nrows,0,2,MPI_COMM_WORLD);
+      MPI_send(cc2[offset],row*nrows,0,2,MPI_COMM_WORLD);
     }
   } else {
     fprintf(stderr, "Usage matrix_times_vector <size>\n");
