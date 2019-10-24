@@ -26,7 +26,7 @@ int main(int argc, char* argv[])
   double *cc2;	/* A x B computed using the conventional algorithm */
   double *AA; //* A matrix read from file*//
   double *BB; // B matrix read from file*//
-  int myid, numprocs;
+  int myid, numprocs, dest, numworker, offset, row,i,j,k;
   double starttime, endtime;
   MPI_Status status;
   /* insert other global variables here */
@@ -40,7 +40,8 @@ int main(int argc, char* argv[])
 
     char * f_mat_a = argv[1];
     char * f_mat_b = argv[2];
-    
+
+    numworkers = numprocs - 1; // sets up the amount that need to be received from
     if (myid == 0) {
       nrows = 0;
       // Master Code goes here
@@ -48,10 +49,26 @@ int main(int argc, char* argv[])
       bb = read_matrix(f_mat_b, &nrows);
       ncols = nrows;
       printf("CUR DIMS [%d]\n", nrows);
-      
+      row = nrows/numworker;
+      offset = 0;
       cc1 = malloc(sizeof(double) * nrows * nrows); 
       starttime = MPI_Wtime();
       /* Insert your master code here to store the product into cc1 */
+      /*
+        for(dest = 1; dest <= numworker; dest++){
+          MPI send col MPI_INT
+          MPI send row MPI_INT
+          MPI send a[col][0] row*nrows
+          MPI send b ncol*ncol
+          col+=row
+        }
+        for(i=1;  i < numworker: i++){
+          recv col
+          recv row
+          recv c[col][0]
+        }
+        print to log files
+      */
       mmult_slow(cc1, aa, nrows, ncols, bb, ncols, nrows);
       endtime = MPI_Wtime();
       fprintf(fp, "SLOW %d %f\n",nrows*ncols, (endtime - starttime));
@@ -66,6 +83,11 @@ int main(int argc, char* argv[])
       fclose(fp);
     } else {
       // Slave Code goes here
+      /*
+        recv from dest for loop set dest to 0
+        do matrix multiplication
+        send the multiplied matrix back
+      */
     }
   } else {
     fprintf(stderr, "Usage matrix_times_vector <size>\n");
