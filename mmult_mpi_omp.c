@@ -62,7 +62,7 @@ int main(int argc, char* argv[])
       for(dest = 1; dest <= numworker; dest++){
         MPI_Send(&offset,1,MPI_INT,dest,2,MPI_COMM_WORLD);
         MPI_Send(&row,1,MPI_INT,dest,2,MPI_COMM_WORLD);
-        MPI_Send(aa,row*nrows,MPI_DOUBLE,dest,2,MPI_COMM_WORLD);
+        MPI_Send(aa[offset],row*nrows,MPI_DOUBLE,dest,2,MPI_COMM_WORLD);
         MPI_Send(bb,ncols*nrows,MPI_DOUBLE,dest,2,MPI_COMM_WORLD);
         offset+=row;
       }
@@ -91,7 +91,7 @@ int main(int argc, char* argv[])
       mmult(cc2, aa, offset, ncols, bb, ncols, nrows);
       MPI_Send(&offset,1,MPI_INT,0,2,MPI_COMM_WORLD);
       MPI_Send(&row,1,MPI_INT,0,2,MPI_COMM_WORLD);
-      MPI_Send(cc2,row*nrows,MPI_DOUBLE,0,2,MPI_COMM_WORLD);
+      MPI_Send(cc2[offset],row*nrows,MPI_DOUBLE,0,2,MPI_COMM_WORLD);
     }
   } else {
     fprintf(stderr, "Usage matrix_times_vector <size>\n");
