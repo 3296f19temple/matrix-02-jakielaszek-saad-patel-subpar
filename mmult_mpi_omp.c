@@ -60,15 +60,15 @@ int main(int argc, char* argv[])
       cc2  = malloc(sizeof(double) * nrows * nrows);
       starttime = MPI_Wtime();
       for(dest = 1; dest <= numworker; dest++){
-        MPI_send(&offset,1,MPI_INT,dest,2,MPI_COMM_WORLD);
-        MPI_send(&row,1,MPI_INT,dest,2,MPI_COMM_WORLD);
-        MPI_send(aa[offset],row*nrows,MPI_DOUBLE,dest,2,MPI_COMM_WORLD);
-        MPI_send(bb,ncols*nrows,MPI_INT,dest,2,MPI_COMM_WORLD);
+        MPI_Send(&offset,1,MPI_INT,dest,2,MPI_COMM_WORLD);
+        MPI_Send(&row,1,MPI_INT,dest,2,MPI_COMM_WORLD);
+        MPI_Send(aa[offset],row*nrows,MPI_DOUBLE,dest,2,MPI_COMM_WORLD);
+        MPI_Send(bb,ncols*nrows,MPI_INT,dest,2,MPI_COMM_WORLD);
       }
       for(dest=1; dest<=numworker; dest++){
-        MPI_recv(&offset,1,MPI_INT,dest,2,MPI_COMM_WORLD,&status);
-        MPI_recv(&row,1,MPI_INT,dest,2,MPI_COMM_WORLD,&status);
-        MPI_recv(cc2[offset],row*nrows,MPI_DOUBLE,dest,2,MPI_COMM_WORLD,&status);
+        MPI_Recv(&offset,1,MPI_INT,dest,2,MPI_COMM_WORLD,&status);
+        MPI_Recv(&row,1,MPI_INT,dest,2,MPI_COMM_WORLD,&status);
+        MPI_Recv(cc2[offset],row*nrows,MPI_DOUBLE,dest,2,MPI_COMM_WORLD,&status);
       }
       endtime = MPI_Wtime();
       fprintf(fp, "FAST %d %f\n",nrows*ncols, (endtime - starttime));
@@ -83,14 +83,14 @@ int main(int argc, char* argv[])
         do matrix multiplication
         send the multiplied matrix back
       */
-      MPI_recv(&offset,1,MPI_INT,0,2,MPI_COMM_WORLD,&status);
-      MPI_recv(&row,1,MPI_INT,0,2,MPI_COMM_WORLD,&status);
-      MPI_recv(aa,row*nrows,MPI_DOUBLE,0,2,MPI_COMM_WORLD,&status);
-      MPI_recv(bb,1,nrows*ncols,0,2,MPI_COMM_WORLD,&status);
+      MPI_Recv(&offset,1,MPI_INT,0,2,MPI_COMM_WORLD,&status);
+      MPI_Recv(&row,1,MPI_INT,0,2,MPI_COMM_WORLD,&status);
+      MPI_Recv(aa,row*nrows,MPI_DOUBLE,0,2,MPI_COMM_WORLD,&status);
+      MPI_Recv(bb,1,nrows*ncols,0,2,MPI_COMM_WORLD,&status);
       mmult(cc2, aa, offset, ncols, bb, ncols, nrows);
-      MPI_send(&offset,1,MPI_INT,0,2,MPI_COMM_WORLD);
-      MPI_send(&row,1,MPI_INT,0,2,MPI_COMM_WORLD);
-      MPI_send(cc2[offset],row*nrows,0,2,MPI_COMM_WORLD);
+      MPI_Send(&offset,1,MPI_INT,0,2,MPI_COMM_WORLD);
+      MPI_Send(&row,1,MPI_INT,0,2,MPI_COMM_WORLD);
+      MPI_Send(cc2[offset],row*nrows,0,2,MPI_COMM_WORLD);
     }
   } else {
     fprintf(stderr, "Usage matrix_times_vector <size>\n");
