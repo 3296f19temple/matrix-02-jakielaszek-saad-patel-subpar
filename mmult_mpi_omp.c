@@ -87,7 +87,7 @@ int main(int argc, char* argv[])
       MPI_recv(&row,1,MPI_INT,0,2,MPI_COMM_WORLD,&status);
       MPI_recv(&aa,row*nrows,MPI_DOUBLE,0,2,MPI_COMM_WORLD,&status);
       MPI_recv(&bb,1,nrows*ncols,0,2,MPI_COMM_WORLD,&status);
-      mmult(cc2, aa, nrows, ncols, bb, ncols, nrows);
+      mmult(cc2, aa, offset, ncols, bb, ncols, nrows);
       MPI_send(&offset,1,MPI_INT,0,2,MPI_COMM_WORLD);
       MPI_send(&row,1,MPI_INT,0,2,MPI_COMM_WORLD);
       MPI_send(cc2[offset][0],rows*nrows,0,2,MPI_COMM_WORLD);
