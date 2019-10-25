@@ -10,7 +10,7 @@ int mmult(double *c, double *a, int aRows, int aCols, double *b, int bRows, int 
 int mmult_slow(double *c, double *a, int aRows, int aCols, double *b, int bRows, int bCols);
 void compare_matrix(double *a, double *b, int nRows, int nCols);
 double* read_matrix(char * fname, int *dims);
-
+MPI_Status status;
 /** 
     Program to multiply a matrix times a matrix using both
     mpi to distribute the computation among nodes and omp
@@ -62,7 +62,7 @@ int main(int argc, char* argv[])
       for(dest = 1; dest <= numworker; dest++){
         MPI_Send(&offset,1,MPI_INT,dest,2,MPI_COMM_WORLD);
         MPI_Send(&row,1,MPI_INT,dest,2,MPI_COMM_WORLD);
-        MPI_Send(aa[offset],row*nrows,MPI_DOUBLE,dest,2,MPI_COMM_WORLD);
+        MPI_Send(aa,row*nrows,MPI_DOUBLE,dest,2,MPI_COMM_WORLD);
         MPI_Send(bb,ncols*nrows,MPI_DOUBLE,dest,2,MPI_COMM_WORLD);
         offset+=row;
       }
@@ -87,11 +87,11 @@ int main(int argc, char* argv[])
       MPI_Recv(&offset,1,MPI_INT,0,2,MPI_COMM_WORLD,&status);
       MPI_Recv(&row,1,MPI_INT,0,2,MPI_COMM_WORLD,&status);
       MPI_Recv(aa,row*nrows,MPI_DOUBLE,0,2,MPI_COMM_WORLD,&status);
-      MPI_Recv(bb,1,nrows*ncols,0,2,MPI_COMM_WORLD,&status);
+      MPI_Recv(bb,nrows*ncols,MPI_DOUBLE,0,2,MPI_COMM_WORLD,&status);
       mmult(cc2, aa, offset, ncols, bb, ncols, nrows);
       MPI_Send(&offset,1,MPI_INT,0,2,MPI_COMM_WORLD);
       MPI_Send(&row,1,MPI_INT,0,2,MPI_COMM_WORLD);
-      MPI_Send(cc2[offset],row*nrows,MPI_DOUBLE,0,2,MPI_COMM_WORLD);
+      MPI_Send(cc2,row*nrows,MPI_DOUBLE,0,2,MPI_COMM_WORLD);
     }
   } else {
     fprintf(stderr, "Usage matrix_times_vector <size>\n");
