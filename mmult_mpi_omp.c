@@ -66,6 +66,7 @@ int main(int argc, char* argv[])
         MPI_Send(bb,ncols*nrows,MPI_DOUBLE,dest,2,MPI_COMM_WORLD);
         offset+=row;
       }
+      puts("Receiving from workers");
       for(dest=1; dest<=numworker; dest++){
         MPI_Recv(&offset,1,MPI_INT,dest,2,MPI_COMM_WORLD,&status);
         MPI_Recv(&row,1,MPI_INT,dest,2,MPI_COMM_WORLD,&status);
@@ -84,6 +85,7 @@ int main(int argc, char* argv[])
         do matrix multiplication
         send the multiplied matrix back
       */
+      puts("receiving from master");
       MPI_Recv(&offset,1,MPI_INT,0,2,MPI_COMM_WORLD,&status);
       MPI_Recv(&row,1,MPI_INT,0,2,MPI_COMM_WORLD,&status);
       MPI_Recv(aa,row*nrows,MPI_DOUBLE,0,2,MPI_COMM_WORLD,&status);
