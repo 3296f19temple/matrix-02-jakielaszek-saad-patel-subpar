@@ -40,7 +40,7 @@ int main(int argc, char* argv[])
 
     char * f_mat_a = argv[1];
     char * f_mat_b = argv[2];
-
+    cc2  = malloc(sizeof(double) * nrows * nrows);
     numworker = numprocs - 1; // sets up the amount that need to be received from
     if (myid == 0) {
       nrows = 0;
@@ -57,7 +57,7 @@ int main(int argc, char* argv[])
       mmult_slow(cc1, aa, nrows, ncols, bb, ncols, nrows);
       endtime = MPI_Wtime();
       fprintf(fp, "SLOW %d %f\n",nrows*ncols, (endtime - starttime));
-      cc2  = malloc(sizeof(double) * nrows * nrows);
+      //cc2  = malloc(sizeof(double) * nrows * nrows);
       starttime = MPI_Wtime();
       for(dest = 1; dest <= numworker; dest++){
         MPI_Send(&offset,1,MPI_INT,dest,2,MPI_COMM_WORLD);
