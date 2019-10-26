@@ -72,7 +72,7 @@ int main(int argc, char* argv[])
       for(dest=1; dest<=numworker; dest++){
         MPI_Recv(&offset,1,MPI_INT,dest,2,MPI_COMM_WORLD,&status);
         MPI_Recv(&row,1,MPI_INT,dest,2,MPI_COMM_WORLD,&status);
-        MPI_Recv(cc2,row*nrows,MPI_DOUBLE,dest,2,MPI_COMM_WORLD,&status);
+        MPI_Recv(cc2,row*nrows,MPI_DOUBLE,dest,3,MPI_COMM_WORLD,&status);
       }
       endtime = MPI_Wtime();
       fprintf(fp, "FAST %d %f\n",nrows*ncols, (endtime - starttime));
@@ -95,7 +95,7 @@ int main(int argc, char* argv[])
       mmult(cc2, aa, offset, ncols, bb, ncols, nrows);
       MPI_Send(&offset,1,MPI_INT,0,2,MPI_COMM_WORLD);
       MPI_Send(&row,1,MPI_INT,0,2,MPI_COMM_WORLD);
-      MPI_Send(cc2,row*nrows,MPI_DOUBLE,0,2,MPI_COMM_WORLD);
+      MPI_Send(cc2,row*nrows,MPI_DOUBLE,0,3,MPI_COMM_WORLD);
     }
   } else {
     fprintf(stderr, "Usage matrix_times_vector <size>\n");
