@@ -42,11 +42,13 @@ int main(int argc, char* argv[])
     char * f_mat_b = argv[2];
     cc2  = malloc(sizeof(double) * nrows * nrows);
     numworker = numprocs - 1; // sets up the amount that need to be received from
+    aa = read_matrix(f_mat_a, &nrows);
+    bb = read_matrix(f_mat_b, &nrows);
     if (myid == 0) {
       nrows = 0;
       // Master Code goes here
-      aa = read_matrix(f_mat_a, &nrows);
-      bb = read_matrix(f_mat_b, &nrows);
+      //aa = read_matrix(f_mat_a, &nrows);
+      //bb = read_matrix(f_mat_b, &nrows);
       ncols = nrows;
       printf("CUR DIMS [%d]\n", nrows);
       row = nrows/numworker;
