@@ -65,7 +65,7 @@ int main(int argc, char* argv[])
         MPI_Send(&offset,1,MPI_INT,dest,2,MPI_COMM_WORLD);
         MPI_Send(&row,1,MPI_INT,dest,2,MPI_COMM_WORLD);
         MPI_Send(aa,row*nrows,MPI_DOUBLE,dest,3,MPI_COMM_WORLD);
-        MPI_Send(bb,ncols*nrows,MPI_DOUBLE,dest,3,MPI_COMM_WORLD);
+        MPI_Send(bb,nrows*nrows,MPI_DOUBLE,dest,3,MPI_COMM_WORLD);
         offset+=row;
       }
       puts("Receiving from workers");
@@ -91,7 +91,7 @@ int main(int argc, char* argv[])
       MPI_Recv(&offset,1,MPI_INT,0,2,MPI_COMM_WORLD,&status);
       MPI_Recv(&row,1,MPI_INT,0,2,MPI_COMM_WORLD,&status);
       MPI_Recv(aa,row*nrows,MPI_DOUBLE,0,3,MPI_COMM_WORLD,&status);
-      MPI_Recv(bb,nrows*ncols,MPI_DOUBLE,0,3,MPI_COMM_WORLD,&status);
+      MPI_Recv(bb,nrows*nrows,MPI_DOUBLE,0,3,MPI_COMM_WORLD,&status);
       mmult(cc2, aa, offset, ncols, bb, ncols, nrows);
       MPI_Send(&offset,1,MPI_INT,0,2,MPI_COMM_WORLD);
       MPI_Send(&row,1,MPI_INT,0,2,MPI_COMM_WORLD);
