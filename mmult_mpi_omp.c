@@ -76,7 +76,7 @@ int main(int argc, char* argv[])
       }
       endtime = MPI_Wtime();
       fprintf(fp, "FAST %d %f\n",nrows*ncols, (endtime - starttime));
-
+      printf("DEBUGGING MPI CALLS RECV in master: %d %d\n",row, offset);
       compare_matrices(cc2, cc1, nrows, nrows);
 
       fclose(fp);
@@ -93,6 +93,7 @@ int main(int argc, char* argv[])
       MPI_Recv(aa,row*nrows,MPI_DOUBLE,0,3,MPI_COMM_WORLD,&status);
       MPI_Recv(bb,nrows*nrows,MPI_DOUBLE,0,3,MPI_COMM_WORLD,&status);
       mmult(cc2, aa, offset, ncols, bb, ncols, nrows);
+      printf("DEBUGGING MPI CALLS RECV in worker: %d %d\n",row, offset);
       MPI_Send(&offset,1,MPI_INT,0,2,MPI_COMM_WORLD);
       MPI_Send(&row,1,MPI_INT,0,2,MPI_COMM_WORLD);
       MPI_Send(cc2,row*nrows,MPI_DOUBLE,0,3,MPI_COMM_WORLD);
