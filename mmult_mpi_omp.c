@@ -95,14 +95,14 @@ int main(int argc, char* argv[])
       int row_inc = row;
        for(int i = 0; i < nrows; i++){
          for(int j = 0; j < row; j++){
-           cc2[row_inc*ncols+j] = 0.0;
+           cc2[i*ncols+j] = 0.0;
           for(int k = 0; k < nrows; k++){
             cc2[i*ncols+j]  += aa[i*ncols+k] + bb[k*ncols+j];
           }
 	  row_inc++;
          }
        }
-      mmult_slow(cc2,aa,row,ncols,bb,nrows,ncols);
+       // mmult_slow(cc2,aa,row,ncols,bb,nrows,ncols);
       printf("DEBUGGING MPI CALLS RECV in worker: %d %d\n",row, offset);
       MPI_Send(&offset,1,MPI_INT,0,2,MPI_COMM_WORLD);
       MPI_Send(&row,1,MPI_INT,0,2,MPI_COMM_WORLD);
