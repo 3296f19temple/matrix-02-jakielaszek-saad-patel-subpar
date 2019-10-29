@@ -10,7 +10,7 @@ int mmult(double *c, double *a, int aRows, int aCols, double *b, int bRows, int 
 int mmult_slow(double *c, double *a, int aRows, int aCols, double *b, int bRows, int bCols);
 void compare_matrix(double *a, double *b, int nRows, int nCols);
 double* read_matrix(char * fname, int *dims);
-
+int mmult_omp(double *c, double *a, int aRows, int aCols, double *b, int bRows, int bCols);
 /** 
     Program to multiply a matrix times a matrix using both
     mpi to distribute the computation among nodes and omp
@@ -24,8 +24,7 @@ int main(int argc, char* argv[])
   double *bb;	/* the B matrix */
   double *cc1;	/* A x B computed using the omp-mpi code you write */
   double *cc2;	/* A x B computed using the conventional algorithm */
-  double *AA; //* A matrix read from file*//
-  double *BB; // B matrix read from file*//
+  double *cc3; //* A x B computed usng omp *//
   int myid, numprocs;
   double starttime, endtime;
   MPI_Status status;
@@ -60,7 +59,13 @@ int main(int argc, char* argv[])
       mmult(cc2, aa, nrows, ncols, bb, ncols, nrows);
       endtime = MPI_Wtime();
       fprintf(fp, "FAST %d %f\n",nrows*ncols, (endtime - starttime));
-
+      
+      cc3 = malloc(sizeof(double) *nrows * nrows);
+      starttime = MPI_Wtime();
+      mmult_omp(cc3, aa, nrows, ncols, bb, ncols, nrows);
+      endtime = MPI_Wtime();
+      fprintf(fp,"MPI %d %f\n",nrows*ncols, (endtime-starttime));
+      compare_matrices(cc3,cc1,nrows, nrows);
       compare_matrices(cc2, cc1, nrows, nrows);
 
       fclose(fp);
@@ -73,4 +78,3 @@ int main(int argc, char* argv[])
   MPI_Finalize();
   return 0;
 }
-
