@@ -30,7 +30,7 @@ int main(int argc, char* argv[])
   double *AA; //* A matrix read from file*//
   double *BB; // B matrix read from file*//
   int myid, numprocs, dest, numworker, offset,numsent,sender,anstype, row,i,j,k;
-  int saad = 0;
+  
   double *cc3; //* A x B computed usng omp *//
 
   double starttime, endtime;
