@@ -125,9 +125,12 @@ int main(int argc, char* argv[])
       printf("%s\n", file_name);
       save_matrix(nrows, file_name, cc1);
       sprintf(file_name, "./results/FAST_result_%d.txt", nrows);
-      save_matrix(nrows, file_name, cc2);
+      save_matrix(nrows, file_name, cc4);
       sprintf(file_name, "./results/OMP_result_%d.txt", nrows);
       save_matrix(nrows, file_name, cc3);
+      sprintf(file_name, "./results/MPI_result_%d.txt", nrows);
+      save_matrix(nrows, file_name, cc2);
+
       printf("saved matrices\n");
       
       fclose(fp);
