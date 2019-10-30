@@ -11,6 +11,8 @@ int mmult_slow(double *c, double *a, int aRows, int aCols, double *b, int bRows,
 void compare_matrix(double *a, double *b, int nRows, int nCols);
 double* read_matrix(char * fname, int *dims);
 MPI_Status status;
+int mmult_omp(double *c, double *a, int aRows, int aCols, double *b, int bRows, int bCols);
+
 /** 
     Program to multiply a matrix times a matrix using both
     mpi to distribute the computation among nodes and omp
@@ -24,9 +26,13 @@ int main(int argc, char* argv[])
   double *bb;	/* the B matrix */
   double *cc1;	/* A x B computed using the omp-mpi code you write */
   double *cc2;	/* A x B computed using the conventional algorithm */
+
   double *AA; //* A matrix read from file*//
   double *BB; // B matrix read from file*//
   int myid, numprocs, dest, numworker, offset,numsent,sender,anstype, row,i,j,k;
+
+  double *cc3; //* A x B computed usng omp *//
+
   double starttime, endtime;
   double *buff, ans;
   MPI_Status status;
@@ -64,7 +70,7 @@ int main(int argc, char* argv[])
       fprintf(fp, "SLOW %d %f\n",nrows*ncols, (endtime - starttime));
       //cc2  = malloc(sizeof(double) * nrows * nrows);
       starttime = MPI_Wtime();
-      double cc4 = malloc(sizeof(double)*nrows*ncols);
+      double *cc4 = malloc(sizeof(double)*nrows*ncols);
       /* Insert your master code here to store the product into cc1 */
       mmult(cc4, aa, nrows, ncols, bb, ncols, nrows);
       endtime = MPI_Wtime();
@@ -97,6 +103,15 @@ int main(int argc, char* argv[])
       endtime = MPI_Wtime();
       fprintf(fp, "MPI %d %f\n",nrows*ncols, (endtime - starttime));
       printf("DEBUGGING MPI CALLS RECV in master: %d %d\n",row, offset);
+
+      
+      cc3 = malloc(sizeof(double) *nrows * nrows);
+      starttime = MPI_Wtime();
+      mmult_omp(cc3, aa, nrows, ncols, bb, ncols, nrows);
+      endtime = MPI_Wtime();
+      fprintf(fp,"MPI %d %f\n",nrows*ncols, (endtime-starttime));
+      compare_matrices(cc3,cc1,nrows, nrows);
+
       compare_matrices(cc2, cc1, nrows, nrows);
       fclose(fp);
     } else {
@@ -130,4 +145,3 @@ int main(int argc, char* argv[])
   MPI_Finalize();
   return 0;
 }
-
