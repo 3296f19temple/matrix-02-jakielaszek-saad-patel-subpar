@@ -26,8 +26,9 @@ int main(int argc, char* argv[])
   double *cc2;	/* A x B computed using the conventional algorithm */
   double *AA; //* A matrix read from file*//
   double *BB; // B matrix read from file*//
-  int myid, numprocs, dest, numworker, offset, row,i,j,k;
+  int myid, numprocs, dest, numworker, offset,numsent,sender,anstype, row,i,j,k;
   double starttime, endtime;
+  double *buff, ans;
   MPI_Status status;
   /* insert other global variables here */
   MPI_Init(&argc, &argv);
@@ -44,15 +45,17 @@ int main(int argc, char* argv[])
     numworker = numprocs - 1; // sets up the amount that need to be received from
     aa = read_matrix(f_mat_a, &nrows);
     bb = read_matrix(f_mat_b, &nrows);
+    ncols = nrows;
+    buff = (double *)malloc(sizeof(double) * ncols);
     if (myid == 0) {
       //nrows = 0;
       // Master Code goes here
       //aa = read_matrix(f_mat_a, &nrows);
       //bb = read_matrix(f_mat_b, &nrows);
-      ncols = nrows;
+      //ncols = nrows;
       printf("CUR DIMS [%d]\n", nrows);
       row = nrows/numworker;
-      offset = 0;
+      // offset = 0;
       cc1 = malloc(sizeof(double) * nrows * nrows); 
       starttime = MPI_Wtime();
       /* Insert your master code here to store the product into cc1 */
@@ -61,24 +64,34 @@ int main(int argc, char* argv[])
       fprintf(fp, "SLOW %d %f\n",nrows*ncols, (endtime - starttime));
       //cc2  = malloc(sizeof(double) * nrows * nrows);
       starttime = MPI_Wtime();
-      for(dest = 1; dest <= numworker; dest++){
-        MPI_Send(&offset,1,MPI_INT,dest,2,MPI_COMM_WORLD);
-        MPI_Send(&row,1,MPI_INT,dest,2,MPI_COMM_WORLD);
-        MPI_Send(aa,row*nrows,MPI_DOUBLE,dest,3,MPI_COMM_WORLD);
-        MPI_Send(bb,nrows*nrows,MPI_DOUBLE,dest,3,MPI_COMM_WORLD);
-        offset+=row;
+      numsent = 0;
+      MPI_Bcast(bb,ncols*nrows,MPI_DOUBLE,0,MPI_COMM_WORLD);
+      for(int i = 0; i<min(numworker,nrows);i++){
+	for(int j = 0; j < ncols; j++ ){
+	  buff[j] = aa[i*ncols+j];
+	}
+	MPI_Send(buff,ncols,MPI_DOUBLE,i+1,i+1,MPI_COMM_WORLD);
+	numsent++;
       }
-      puts("Receiving from workers");
-      for(dest=1; dest<=numworker; dest++){
-        MPI_Recv(&offset,1,MPI_INT,dest,2,MPI_COMM_WORLD,&status);
-        MPI_Recv(&row,1,MPI_INT,dest,2,MPI_COMM_WORLD,&status);
-        MPI_Recv(cc2,row*nrows,MPI_DOUBLE,dest,3,MPI_COMM_WORLD,&status);
+      for(int i = 0; i < nrows; i++ ){
+	MPI_Recv(&ans,1,MPI_DOUBLE,MPI_ANY_SOURCE,MPI_ANY_TAG,MPI_COMM_WORLD,&status);
+        anstype = status.MPI_TAG;
+        sender = status.MPI_SOURCE;
+	cc2[(anstype-1)] = ans;
+	if(numsent < nrows){
+	  for(int j = 0; j < ncols; j++){
+	    buff[j] = aa[numsent*ncols+j];
+	  }
+	  MPI_Send(buff,ncols,MPI_DOUBLE,sender,numsent+1,MPI_COMM_WORLD);
+	  numsent++;
+	} else {
+	  MPI_Send(MPI_BOTTOM,0,MPI_DOUBLE,sender,0,MPI_COMM_WORLD);
+	}
       }
       endtime = MPI_Wtime();
       fprintf(fp, "FAST %d %f\n",nrows*ncols, (endtime - starttime));
       printf("DEBUGGING MPI CALLS RECV in master: %d %d\n",row, offset);
       compare_matrices(cc2, cc1, nrows, nrows);
-
       fclose(fp);
     } else {
       // Slave Code goes here
@@ -88,25 +101,22 @@ int main(int argc, char* argv[])
         send the multiplied matrix back
       */
       puts("receiving from master");
-      MPI_Recv(&offset,1,MPI_INT,0,2,MPI_COMM_WORLD,&status);
-      MPI_Recv(&row,1,MPI_INT,0,2,MPI_COMM_WORLD,&status);
-      MPI_Recv(aa,row*nrows,MPI_DOUBLE,0,3,MPI_COMM_WORLD,&status);
-      MPI_Recv(bb,nrows*nrows,MPI_DOUBLE,0,3,MPI_COMM_WORLD,&status);
       int row_inc = row;
-       for(int i = 0; i < nrows; i++){
-         for(int j = 0; j < row; j++){
-           cc2[i*ncols+j] = 0.0;
-          for(int k = 0; k < nrows; k++){
-            cc2[i*ncols+j]  += aa[i*ncols+k] + bb[k*ncols+j];
-          }
-	  row_inc++;
-         }
-       }
-       // mmult_slow(cc2,aa,row,ncols,bb,nrows,ncols);
-      printf("DEBUGGING MPI CALLS RECV in worker: %d %d\n",row, offset);
-      MPI_Send(&offset,1,MPI_INT,0,2,MPI_COMM_WORLD);
-      MPI_Send(&row,1,MPI_INT,0,2,MPI_COMM_WORLD);
-      MPI_Send(cc2,row*nrows,MPI_DOUBLE,0,3,MPI_COMM_WORLD);
+      MPI_Bcast(bb,ncols*nrows,MPI_DOUBLE,0,MPI_COMM_WORLD);
+      if(myid <= nrows){
+	while(1){
+	  MPI_Recv(buff,ncols,MPI_DOUBLE,MPI_ANY_SOURCE,MPI_ANY_TAG,MPI_COMM_WORLD,&status);
+	  if(status.MPI_TAG == 0){
+	    break;
+	  }
+	  row = status.MPI_TAG;
+	  ans = 0.0;
+	  for(int i = 0; i < nrows; i++){
+	   ans+=buff[i]*bb[i*ncols+row];
+	  }
+	  MPI_Send(&ans,1,MPI_DOUBLE,0,row,MPI_COMM_WORLD);
+	}
+      }
     }
   } else {
     fprintf(stderr, "Usage matrix_times_vector <size>\n");
