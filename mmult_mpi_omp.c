@@ -12,7 +12,7 @@ void compare_matrix(double *a, double *b, int nRows, int nCols);
 double* read_matrix(char * fname, int *dims);
 MPI_Status status;
 int mmult_omp(double *c, double *a, int aRows, int aCols, double *b, int bRows, int bCols);
-
+void save_matrix(int dim, char * fname, double * matrix);
 /** 
     Program to multiply a matrix times a matrix using both
     mpi to distribute the computation among nodes and omp
@@ -51,6 +51,8 @@ int main(int argc, char* argv[])
     numworker = numprocs - 1; // sets up the amount that need to be received from
     aa = read_matrix(f_mat_a, &nrows);
     bb = read_matrix(f_mat_b, &nrows);
+    printf("%d\n", nrows);
+    
     ncols = nrows;
     buff = (double *)malloc(sizeof(double) * ncols);
     if (myid == 0) {
@@ -67,6 +69,7 @@ int main(int argc, char* argv[])
       /* Insert your master code here to store the product into cc1 */
       mmult_slow(cc1, aa, nrows, ncols, bb, ncols, nrows);
       endtime = MPI_Wtime();
+      printf("SLOW %d %f\n",nrows*ncols, (endtime - starttime));
       fprintf(fp, "SLOW %d %f\n",nrows*ncols, (endtime - starttime));
       //cc2  = malloc(sizeof(double) * nrows * nrows);
       starttime = MPI_Wtime();
@@ -74,6 +77,7 @@ int main(int argc, char* argv[])
       /* Insert your master code here to store the product into cc1 */
       mmult(cc4, aa, nrows, ncols, bb, ncols, nrows);
       endtime = MPI_Wtime();
+      printf("FAST %d %f\n",nrows*ncols, (endtime - starttime));
       fprintf(fp, "FAST %d %f\n",nrows*ncols, (endtime - starttime));
       starttime = MPI_Wtime();
       numsent = 0;
@@ -101,6 +105,7 @@ int main(int argc, char* argv[])
 	}
       }
       endtime = MPI_Wtime();
+      printf("MPI %d %f\n",nrows*ncols, (endtime - starttime));
       fprintf(fp, "MPI %d %f\n",nrows*ncols, (endtime - starttime));
       printf("DEBUGGING MPI CALLS RECV in master: %d %d\n",row, offset);
 
@@ -113,6 +118,21 @@ int main(int argc, char* argv[])
       compare_matrices(cc3,cc1,nrows, nrows);
 
       compare_matrices(cc2, cc1, nrows, nrows);
+
+      printf("saving matrices\n");
+      char file_name[300];
+      sprintf(file_name, "./results/SLOW_result_%d.txt", nrows);
+      printf("%s\n", file_name);
+      save_matrix(nrows, file_name, cc1);
+      sprintf(file_name, "./results/FAST_result_%d.txt", nrows);
+      save_matrix(nrows, file_name, cc4);
+      sprintf(file_name, "./results/OMP_result_%d.txt", nrows);
+      save_matrix(nrows, file_name, cc3);
+      sprintf(file_name, "./results/MPI_result_%d.txt", nrows);
+      save_matrix(nrows, file_name, cc2);
+
+      printf("saved matrices\n");
+      
       fclose(fp);
     } else {
       // Slave Code goes here
