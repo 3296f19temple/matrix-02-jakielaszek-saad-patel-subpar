@@ -64,6 +64,12 @@ int main(int argc, char* argv[])
       fprintf(fp, "SLOW %d %f\n",nrows*ncols, (endtime - starttime));
       //cc2  = malloc(sizeof(double) * nrows * nrows);
       starttime = MPI_Wtime();
+      double cc4 = malloc(sizeof(double)*nrows*ncols);
+      /* Insert your master code here to store the product into cc1 */
+      mmult(cc4, aa, nrows, ncols, bb, ncols, nrows);
+      endtime = MPI_Wtime();
+      fprintf(fp, "FAST %d %f\n",nrows*ncols, (endtime - starttime));
+      starttime = MPI_Wtime();
       numsent = 0;
       MPI_Bcast(bb,ncols*nrows,MPI_DOUBLE,0,MPI_COMM_WORLD);
       for(int i = 0; i<min(numworker,nrows);i++){
@@ -89,7 +95,7 @@ int main(int argc, char* argv[])
 	}
       }
       endtime = MPI_Wtime();
-      fprintf(fp, "FAST %d %f\n",nrows*ncols, (endtime - starttime));
+      fprintf(fp, "MPI %d %f\n",nrows*ncols, (endtime - starttime));
       printf("DEBUGGING MPI CALLS RECV in master: %d %d\n",row, offset);
       compare_matrices(cc2, cc1, nrows, nrows);
       fclose(fp);
