@@ -17,6 +17,10 @@ do
 mpiexec -f ~/hosts -n 4 ./mmult_mpi_omp matrix_a.txt matrix_b.txt log.txt
 done
 
+python3 postProc.py
+
+gnuplot graph.gnu
+
 make clean
 echo All Done
 exit
