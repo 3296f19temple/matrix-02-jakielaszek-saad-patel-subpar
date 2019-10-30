@@ -109,7 +109,7 @@ int main(int argc, char* argv[])
       starttime = MPI_Wtime();
       mmult_omp(cc3, aa, nrows, ncols, bb, ncols, nrows);
       endtime = MPI_Wtime();
-      fprintf(fp,"MPI %d %f\n",nrows*ncols, (endtime-starttime));
+      fprintf(fp,"OMP %d %f\n",nrows*ncols, (endtime-starttime));
       compare_matrices(cc3,cc1,nrows, nrows);
 
       compare_matrices(cc2, cc1, nrows, nrows);
@@ -121,6 +121,7 @@ int main(int argc, char* argv[])
         do matrix multiplication
         send the multiplied matrix back
       */
+
       puts("receiving from master");
       int row_inc = row;
       MPI_Bcast(bb,ncols*nrows,MPI_DOUBLE,0,MPI_COMM_WORLD);
