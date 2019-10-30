@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+from collections import OrderedDict
+
 if __name__ == "__main__":
     file_a = []
     
@@ -15,17 +17,14 @@ if __name__ == "__main__":
         type_a, size, val = entry.split()
 
         if(type_a not in types):
-            types[type_a] = {}
+            types[type_a] = OrderedDict()
 
         if(size not in types[type_a]):
-            types[type_a][size] = []
-
-        types[type_a][size].append(val)
-
+            types[type_a][size] = val
 
     for entry in types:
         with open(entry + ".txt", "w") as procFile:
             for size in types[entry]:
-                procFile.write(size + ", " + types[entry][size][0] + "\n");
+                procFile.write(size + ", " + types[entry][size] + "\n");
 
     
