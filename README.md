@@ -8,8 +8,8 @@ The project requires three implementations that must be done. These are SIMD, MP
 
 ## Teamwork
 
-Dishant Patel - wrote the shell script for task 1 and implement MPI to be done in task 3, also wrote the README
-
+Dishant Patel - wrote the shell script for task 1 and implement MPI to be done in task 5, also wrote the README
+Ahmad Saad - Implemented Task 1 to read and write matrix from and to a file. Implemented Task 4 Open MP. Tried to assist Dishant with Task 5. I created and maintained the Trello board mostly.
 The master branch was locked so that anything that code has to be done in a seperate branch and can only be added to master through creating pull requests for the branch. The pull requests must be reviewed by someone else besides the person that created the pull request.
 
 ## Full Project Life Cycle
