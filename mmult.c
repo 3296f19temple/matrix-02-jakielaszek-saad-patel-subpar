@@ -136,13 +136,13 @@ void tabulateMatrix(double *matrix, int rows, int cols){
 	int j =0;int k = 0;
 	double newMatrix[rows][cols];
 	for(int i = 0; i < rows*cols; i++){
-		if((i+1)%cols ==0){
+		printf("%lf ",matrix[i]);
+		newMatrix[j][k] = matrix[i];
+		k++;
+		if((i+1)%cols == 0){
 			j++;
-			k=0;
+			k =0;
 			printf("\n");
-	}
-	printf("%lf ",matrix[i]);
-	newMatrix[j][k] = matrix[i];
-	k++;
+		}
 	}
 }
