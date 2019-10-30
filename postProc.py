@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from collections import OrderedDict
+import math
 
 if __name__ == "__main__":
     file_a = []
@@ -25,6 +26,9 @@ if __name__ == "__main__":
     for entry in types:
         with open(entry + ".txt", "w") as procFile:
             for size in types[entry]:
-                procFile.write(size + ", " + types[entry][size] + "\n");
+                val = int(size)
+                val = int(math.sqrt(val))
+                
+                procFile.write(str(val) + ", " + types[entry][size] + "\n");
 
     
