@@ -18,15 +18,15 @@ int main(int argc, char ** argv){
 
   FILE * fp = fopen(fname, "w");
 
-  fprintf(fp, "%d ", dims);
-
   int i = 0;
-  for(i = 0; i < dims*dims - 1; i++){
-    fprintf(fp, "%lf ", matrix[i]);
+  for(i = 0; i < dims; i++){
+    int j = 0;
+    for(j = 0; j < dims-1; j++){
+      fprintf(fp, "%lf ", matrix[i*dims+j]);
+    }
+    fprintf(fp, "%lf\n", matrix[i*dims+j]);
   }
 
-  fprintf(fp, "%lf", matrix[i]);
-  
   fclose(fp);
 }
 

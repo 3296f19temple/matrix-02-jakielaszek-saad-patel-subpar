@@ -3,6 +3,19 @@
 #include<math.h>
 #include<string.h>
 
+void save_matrix(int dim, char * fname, double * matrix){
+  FILE * fp = fopen(fname, "w");
+
+  int i = 0;
+  for(i = 0; i < dim; i++){
+    int j = 0;
+    for(j = 0; j < dim-1; j++){
+      fprintf(fp, "%lf ", matrix[i*dim+j]);
+    }
+    fprintf(fp, "%lf\n", matrix[i*dim+j]);
+  }
+}
+
 int mmult(double *c, 
 	  double *a, int aRows, int aCols, 
 	  double *b, int bRows, int bCols) {
@@ -51,19 +64,39 @@ double* read_matrix(char * fname, int *dims){
   int BUFFSIZE = 100000000;
   char *buffer = (char*)malloc(sizeof(char)*BUFFSIZE);
 
-  if(fgets(buffer, BUFFSIZE, fp) == NULL){
-    printf("ERROR: Invalid matrix file");
-  }
+  // get dims of matrix
+  fgets(buffer, BUFFSIZE, fp);
+  buffer[strlen(buffer)-1] = '\0';
+  int count = 0;
   char * token = strtok(buffer, " ");
-  *dims = atoi(token);
+  while(token != NULL){
+    count++;
+    token = strtok(NULL, " ");
+  }
 
-  int length = (*dims)*(*dims);
-  double * matrix = (double*)malloc(sizeof(double)*length);
+  *dims = count;
   
-  int i =0;
-  for(i = 0; i <length; i++){
-    char * token = strtok(NULL, " ");
-    matrix[i] = atof(token);
+  int length = count * count;
+  double * matrix = (double*)malloc(sizeof(double)*length);
+
+  rewind(fp);
+
+  int i = 0;
+  for(i = 0; i < count; i++){
+    // get line
+    fgets(buffer, BUFFSIZE, fp);
+    
+    // remove newline
+    buffer[strlen(buffer)-1] = '\0';
+
+    int j =0;
+    char * token = strtok(buffer, " ");
+    matrix[i*count] = atof(token);
+    // parse line
+    for(j = 1; j < count; j++){
+      token = strtok(NULL, " ");
+      matrix[i*count + j] = atof(token); 
+    }
 
   }
 
