@@ -10,6 +10,8 @@ The project requires three implementations that must be done. These are SIMD, MP
 
 Dishant Patel - wrote the shell script for task 1 and implement MPI to be done in task 3, also wrote the README
 
+Luke Jakielaszek - Completed task 1 by reverting the matrix multiplication loop to slow form. Also added in statements within shell script to automate matrix multiplication for task 0 and utilize multiplication methods from task 1 & 2. Wrote a python script to postprocess multiplication timing output within log file to prepare data for graph generation (task 5). Used GNU plot in combination with our postprocessed data to generate graphs (Task 5). Automated graph production with the shell script (task 9). Read and write matrices from and to files according to the specified input (Task 6).
+
 The master branch was locked so that anything that code has to be done in a seperate branch and can only be added to master through creating pull requests for the branch. The pull requests must be reviewed by someone else besides the person that created the pull request.
 
 ## Full Project Life Cycle
@@ -30,3 +32,4 @@ The majority of tasks is mainly about writing variations of the code with a mino
 
 matrix-02-jakielaszek-sad-patel-subpar created by GitHub Classroom
 Trello BOard Link: https://trello.com/b/uLhLPekH/jakielaszek-saad-patel-subpar
+![Statistics](https://github.com/3296f19temple/matrix-02-jakielaszek-saad-patel-subpar/blob/master/outGraph.png)
